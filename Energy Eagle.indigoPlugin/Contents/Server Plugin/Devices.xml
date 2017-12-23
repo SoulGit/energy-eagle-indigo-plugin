@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<Devices>
+	<!-- Define the Devices -->
+	<Device type="custom" id="EAGLE">
+		<Name>RFA-Z114 EAGLE (Eagle-200)</Name>
+		<ConfigUI>
+			<Field id="ipAddress" type="textfield">
+				<Label>IP Address:</Label>
+			</Field>
+			<Field id="cloudID" type="textfield">
+				<Label>Cloud ID:</Label>
+			</Field>
+			<Field id="installCode" type="textfield">
+				<Label>Installer Code:</Label>
+			</Field>
+			<!-- DeviceInfo -->
+			<Field id="meterHardwareAddress" type="textfield" hidden="true">
+				<!-- Meter Hardware Address -->
+				<Label/>
+			</Field>
+			<Field id="billingCycleStartTimestamp" type="textfield" hidden="true">
+				<!-- Billing Cycle Start Date/Time -->
+				<Label/>
+			</Field>
+			<Field id="address" type="textfield" hidden="true">
+				<!-- Indigo Device Address (for UI) -->
+				<Label/>
+			</Field>
+		</ConfigUI>
+		<UiDisplayStateId>instantaneousDemand</UiDisplayStateId>
+		<States>
+			<!-- ===========
+			CURRENT READINGS
+			============ -->
+			<State id="instantaneousDemand">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Current Load (kW)</TriggerLabel>
+				<ControlPageLabel>Current Load (kW)</ControlPageLabel>
+			</State>
+			<State id="energyInput1">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Current Load (kW)</TriggerLabel>
+				<ControlPageLabel>Current Load (kW)</ControlPageLabel>
+			</State>
+			<State id="energyInput1Timestamp">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Current Load Timestamp</TriggerLabel>
+				<ControlPageLabel>Current Load Timestamp</ControlPageLabel>
+			</State>
+			<State id="energyInput1Delta">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Change in Current Load (kW)</TriggerLabel>
+				<ControlPageLabel>Change in Current Load (kW)</ControlPageLabel>
+			</State>
+			<State id="energyInput1DeltaTime">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Time Since Last Current Load Change (s)</TriggerLabel>
+				<ControlPageLabel>Time Since Last Current Load Change (s)</ControlPageLabel>
+			</State>
+			<State id="sepCost">
+				<ValueType>Separator</ValueType>
+			</State>
+			<State id="costPerHour">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Current Cost per Hour</TriggerLabel>
+				<ControlPageLabel>Current Cost per Hour</ControlPageLabel>
+			</State>
+			<State id="costToday">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Cost for Today</TriggerLabel>
+				<ControlPageLabel>Cost for Today</ControlPageLabel>
+			</State>
+			<State id="costThisCycle">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Cost for this Billing Cycle</TriggerLabel>
+				<ControlPageLabel>Cost for this Billing Cycle</ControlPageLabel>
+			</State>
+			<State id="price">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Price per kWh</TriggerLabel>
+				<ControlPageLabel>Price per kWh</ControlPageLabel>
+			</State>
+			<State id="tier">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Price Tier</TriggerLabel>
+				<ControlPageLabel>Price Tier</ControlPageLabel>
+			</State>
+			<State id="rateLabel">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Price Rate Label</TriggerLabel>
+				<ControlPageLabel>Price Rate Label</ControlPageLabel>
+			</State>
+		</States>
+	</Device>
+</Devices>
