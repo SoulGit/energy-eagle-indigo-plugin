@@ -3,7 +3,9 @@ import re
 import time
 import socket
 import requests
-from lxml import objectify
+from StringIO import StringIO
+import HTMLParser
+from lxml import objectify, etree
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
@@ -158,7 +160,6 @@ class Plugin(indigo.PluginBase):
         loops = 0
         try:
             while True:
-
                 # Cycle through each EAGLE device to update it.
                 for deviceId in self.deviceList:
                     # Call the update method with the device instance
@@ -167,10 +168,13 @@ class Plugin(indigo.PluginBase):
                     # Make sure there's a meterHardwareAddress address associated with the device.
                     if localProps.get('meterHardwareAddress', "") == "":
                         # Update the device info.
-                        self.eagleDeviceInfo(device)
+                        result = self.eagleDeviceInfo(device)
+                        if not result:
+                            pass
                     # Update everything, but only if a meterHardwareAddress exists in the device.
                     if localProps.get('meterHardwareAddress', "") != "":
                         # Update the device data every loop iteration.
+                        self.debugLog(localProps.get('meterHardwareAddress'))
                         self.eagleDeviceData(device)
 
                 # Sleep 5 seconds before updating again.
@@ -249,13 +253,13 @@ class Plugin(indigo.PluginBase):
         """Get Device Info from Eagle"""
         self.debugLog(u"eagleDeviceInfo called.  Device: %s" % (device.name))
 
-        error = False
+        success = False
 
         localProps = device.pluginProps
 
         theCommand = "device_list"
         theXml = self.sendCommand(device, theCommand)
-
+        self.debugLog(u"XML Output: {}".format(theXml))
         if theXml is not None:
             xmlTree = objectify.fromstring(theXml)
 
@@ -266,18 +270,21 @@ class Plugin(indigo.PluginBase):
                 except Exception, e:
                     self.debugLog(u"Unable to get \"DeviceHardwareAddress\" XML \
                         element from EAGLE. Error was: " + str(e))
-                    error = True
+                    success = False
 
             # Update Device Properties on Server.
             self.updateDeviceProps(device, localProps)
         else:
-            error = True
+            success = False
+            self.debugLog(u"Unable to get device info")
 
         # Display a generic error message if there were any errors.
-        if error:
+        if not success:
             indigo.server.log(u"The device list data returned from the EAGLE was \
             corrupt or incomplete. Enable debugging in the Energy EAGLE plugin \
             configuration to start viewing detailed error logs.")
+
+        return success
 
     def eagleDeviceData(self, device):
         """Get Data from Eagle Device"""
@@ -291,9 +298,14 @@ class Plugin(indigo.PluginBase):
 
         theCommand = "device_query"
         theXml = self.sendCommand(device, theCommand)
+        self.debugLog("Received XML: {}".format(theXml))
 
-        if theXml is not None:
-            xmlTree = objectify.fromstring(theXml)
+        if len(theXml): #"Error Nonetype has no len"
+            # As of version 2.14.8.381, The XML contains illegal characters (&).  Force processing with recover option
+            parser = etree.XMLParser(ns_clean=True, recover=True)
+            parsedXML = etree.parse(StringIO(theXml), parser)
+            xmlString = etree.tostring(parsedXML.getroot())
+            xmlTree = objectify.fromstring(xmlString)
             newRoot = xmlTree.Components.Component.Variables
 
             try:
